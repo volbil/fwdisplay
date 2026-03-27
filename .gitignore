@@ -1,0 +1,32 @@
+# Build artifacts
+dist/
+build/
+vendor/
+*.o
+*.dSYM/
+
+# Binaries
+sender/fwdisplay-sender
+*.exe
+*.deb
+
+# macOS
+.DS_Store
+
+# Theos (iPad)
+ipad/.theos/
+ipad/packages/
+
+# Python (legacy)
+.venv/
+__pycache__/
+*.pyc
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Claude Code
+.claude/

@@ -1,0 +1,9 @@
+Package: com.fwdisplay.app
+Name: FWDisplay
+Depends: firmware (>= 9.0)
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: USB second display receiver
+Maintainer: fwdisplay
+Author: fwdisplay
+Section: Applications
