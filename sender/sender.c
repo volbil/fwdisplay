@@ -444,11 +444,14 @@ int main(int argc, char **argv) {
                         (unsigned long)(enc.out_size / 1024));
             }
 
-            /* Frame rate control */
-            double dt = time_now() - t0;
-            double sleep_time = frame_interval - dt;
-            if (sleep_time > 0.001) {
-                usleep((unsigned)(sleep_time * 1e6));
+            /* Frame rate control: sleep for the bulk, spin-wait for precision */
+            double target = t0 + frame_interval;
+            double remaining = target - time_now();
+            if (remaining > 0.002) {
+                usleep((unsigned)((remaining - 0.001) * 1e6));
+            }
+            while (time_now() < target) {
+                /* spin */
             }
 
             backoff = 0;
