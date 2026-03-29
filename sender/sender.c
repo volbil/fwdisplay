@@ -187,6 +187,10 @@ static void print_usage(const char *prog) {
         "  --quality N     JPEG quality 1-100 (default: %d)\n"
         "  --width W       Output width (default: %d)\n"
         "  --height H      Output height (default: %d)\n"
+#ifndef _WIN32
+        "  --daemon, -d    Run in background (log to /tmp/fwdisplay.log)\n"
+        "  --log FILE      Log file path (use with --daemon)\n"
+#endif
 #ifdef __APPLE__
         "  --no-virtual    Don't create virtual display, capture --monitor instead\n"
 #endif
@@ -225,6 +229,8 @@ int main(int argc, char **argv) {
     int quality = JPEG_QUALITY;
     int width   = DEFAULT_WIDTH;
     int height  = DEFAULT_HEIGHT;
+    int daemonize = 0;
+    const char *log_path = NULL;
 #ifdef __APPLE__
     int no_virtual = 0;
 #endif
@@ -241,6 +247,10 @@ int main(int argc, char **argv) {
             width = atoi(argv[++i]);
         else if (strcmp(argv[i], "--height") == 0 && i + 1 < argc)
             height = atoi(argv[++i]);
+        else if (strcmp(argv[i], "--daemon") == 0 || strcmp(argv[i], "-d") == 0)
+            daemonize = 1;
+        else if (strcmp(argv[i], "--log") == 0 && i + 1 < argc)
+            log_path = argv[++i];
 #ifdef __APPLE__
         else if (strcmp(argv[i], "--no-virtual") == 0)
             no_virtual = 1;
@@ -250,6 +260,36 @@ int main(int argc, char **argv) {
             return 0;
         }
     }
+
+#ifndef _WIN32
+    /* Daemonize: fork to background */
+    if (daemonize) {
+        pid_t pid = fork();
+        if (pid < 0) {
+            perror("fork");
+            return 1;
+        }
+        if (pid > 0) {
+            /* Parent: print child PID and exit */
+            fprintf(stderr, "[fwdisplay] Daemon started (PID %d)\n", pid);
+            return 0;
+        }
+        /* Child: new session, redirect output */
+        setsid();
+
+        const char *lp = log_path ? log_path : "/tmp/fwdisplay.log";
+        FILE *lf = fopen(lp, "a");
+        if (lf) {
+            dup2(fileno(lf), STDOUT_FILENO);
+            dup2(fileno(lf), STDERR_FILENO);
+            fclose(lf);
+            fprintf(stderr, "[fwdisplay] Logging to %s\n", lp);
+        }
+
+        /* Close stdin */
+        fclose(stdin);
+    }
+#endif
 
     signal(SIGINT, signal_handler);
     signal(SIGTERM, signal_handler);
