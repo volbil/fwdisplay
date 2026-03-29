@@ -37,15 +37,8 @@
 
         // Store latest frame — overwrites any undelivered previous frame
         @synchronized(strongSelf) {
-            BOOL dropped = (strongSelf.pendingImage != nil);
             strongSelf.pendingImage = image;
             if (strongSelf.displayScheduled) {
-                // Frame dropped — show loading indicator
-                if (dropped) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [vc showLoadingIndicator];
-                    });
-                }
                 return;
             }
             strongSelf.displayScheduled = YES;
