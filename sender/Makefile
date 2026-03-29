@@ -7,11 +7,11 @@ COMMON_SRC = sender.c usbmux.c
 UNAME := $(shell uname -s)
 
 ifeq ($(UNAME),Darwin)
-    PLATFORM_SRC = capture_mac.c touch.c
-    OBJC_SRC     = virtual_display.m cursor_mac.m
+    PLATFORM_SRC = touch.c
+    OBJC_SRC     = capture_mac.m virtual_display.m cursor_mac.m
     CFLAGS  = -O2 -Wall -Wextra
     OBJCFLAGS = -O2 -Wall -fobjc-arc
-    LDFLAGS = -framework CoreGraphics -framework ApplicationServices -framework Foundation -framework AppKit
+    LDFLAGS = -framework CoreGraphics -framework ApplicationServices -framework Foundation -framework AppKit -framework ScreenCaptureKit -framework CoreMedia -framework CoreVideo
     JPEG_CFLAGS  := $(shell pkg-config --cflags libturbojpeg 2>/dev/null)
     JPEG_LDFLAGS := $(shell pkg-config --libs libturbojpeg 2>/dev/null)
     # Fallback if pkg-config fails (Homebrew default)

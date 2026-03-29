@@ -34,7 +34,7 @@
 #endif
 
 #define DEFAULT_PORT     8765
-#define DEFAULT_FPS      30
+#define DEFAULT_FPS      60
 #define JPEG_QUALITY     85
 #define DEFAULT_WIDTH    1024
 #define DEFAULT_HEIGHT   768
